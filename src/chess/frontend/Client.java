@@ -1,34 +1,49 @@
 package chess.frontend;
 
+import chess.backend.GameManager;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 
 public class Client extends Thread {
+    static Client Reference;
     BufferedImage bKing, bQueen, bRook, bBishop, bKnight, bPawn;    //Black piece icons
     BufferedImage wKing, wQueen, wRook, wBishop, wKnight, wPawn;    //White piece icons
     BufferedImage background, validBorder, selectedBorder;          //Misc. images
-    int[] selected = {-1, -1};    //Coordinates of the selected piece
-    int[] destination = {-1, -1}; //Coordinates of the destination
+    private int[] selected = {-1, -1};    //Coordinates of the selected piece
+    private int[] destination = {-1, -1}; //Coordinates of the destination
     private boolean newTurn;
     private boolean gameOver;
+    private Log log;
+    private BoardManager boardManager;
+    private GameManager gameManager;
 
     public Client() {
+        Reference = this;
+        log = new Log();
+        boardManager = new BoardManager(100, 100, this);
+
         loadImages();
 
         JFrame frame = new JFrame("Chess Client");
-        frame.setSize(500, 500);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.getContentPane().setBackground(Color.pink);
+        frame.setSize(750, 750);
+        frame.setLayout(null);
 
-        JPanel panel = new JPanel();
-        JLabel label = new JLabel(new ImageIcon(background));
-
-        panel.add(label);
-        frame.add(panel);
+        buildBoard(frame);
 
         frame.setVisible(true);
+
+        log.UpdateMinimaxLog(10, 2, 43.56646f);
     }
 
     public void run() {
@@ -50,6 +65,70 @@ public class Client extends Thread {
             }
             //TODO Receive game over command from backend
         }
+    }
+
+    private void buildBoard(JFrame frame) {
+
+        JPanel boardUI = boardManager.GeneratePanel(background);
+        JPanel logUI = log.GeneratePanel();
+
+        frame.add(boardUI);
+        frame.add(logUI);
+        //frame.add(board, BorderLayout.CENTER);
+        boardManager.UpdatePieceIcon(1, 2, wPawn);
+    }
+
+    static char numberToLetter(int number) {
+        return switch (number) {
+            case 1 -> 'a';
+            case 2 -> 'b';
+            case 3 -> 'c';
+            case 4 -> 'd';
+            case 5 -> 'e';
+            case 6 -> 'f';
+            case 7 -> 'g';
+            case 8 -> 'h';
+            default -> '-';
+        };
+    }
+
+    private int letterToNumber(char letter) {
+        letter = Character.toLowerCase(letter);
+        return switch (letter) {
+            case 'a' -> 1;
+            case 'b' -> 2;
+            case 'c' -> 3;
+            case 'd' -> 4;
+            case 'e' -> 5;
+            case 'f' -> 6;
+            case 'g' -> 7;
+            case 'h' -> 8;
+            default -> -1;
+        };
+    }
+
+    public void TileClicked(int x, int y) {
+        if (selected[0] < 0 && !boardManager.IsEmptyTile(x, y)) {
+            System.out.println("start point selected");
+            selected[0] = x;
+            selected[1] = y;
+            boardManager.UpdateEffectIcon(x, y, selectedBorder);
+        } else if(selected[0] > 0) {
+            System.out.println("destination selected");
+            destination[0] = x;
+            destination[1] = y;
+
+            if(!Arrays.equals(selected, destination)) checkMove();
+        }
+    }
+
+    private void checkMove() {
+        //I would call the backend to verify if the move is valid
+        System.out.println("It's movin' time");
+        boardManager.MovePiece(selected[0], selected[1], destination[0], destination[1]);
+        log.UpdateMoveLog(selected[0] + ", " + selected[0] + " -> " + destination[0] + ", " + destination[0]);
+        Arrays.fill(selected, -1);
+        Arrays.fill(destination, -1);
     }
 
 
