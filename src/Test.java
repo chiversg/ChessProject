@@ -4,7 +4,5 @@ import chess.backend.*;
 public class Test {
     public static void main(String[] args) {
         new Client();
-
-        System.out.println(new ChessBoard());
     }
 }
