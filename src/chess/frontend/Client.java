@@ -1,5 +1,6 @@
 package chess.frontend;
 
+import chess.backend.InvalidMoveException;
 import chess.utilities.ChessUtil;
 import chess.backend.GameManager;
 
@@ -79,6 +80,9 @@ public class Client {
         }
     }
 
+
+
+
     private void checkMove() {
         //I would call the backend to verify if the move is valid
         if (!fromPos.equals(toPos)) {
@@ -115,6 +119,12 @@ public class Client {
         //Update Log
         log.UpdateTurnLabel(currentTurn);
     }
+
+    public void boardStateChanged() {
+        char[][] newBoard = gameManager.getCharArr();
+        ChessUtil.TurnType turn = gameManager.turnType;
+    }
+
 
     private BufferedImage letterToImage(char letter) {
         return switch (letter) {

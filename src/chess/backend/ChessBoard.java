@@ -68,6 +68,10 @@ public class ChessBoard {
         return out.toString();
     }
 
+    public char[][] getCharArr() {
+        return board;
+    }
+
 
 
     public int pieceValue(int x, int y) {

@@ -1,10 +1,14 @@
 package chess.backend;
 
+import chess.utilities.ChessUtil.TurnType;
+
 import java.util.ArrayList;
 
 public class GameManager {
     private ChessBoard board = new ChessBoard();
     private ArrayList<Character> captured = new ArrayList<>();
+
+    public TurnType turnType = TurnType.White;
 
     public void makeMove(int x1, int y1, int x2, int y2) {
         if (!validMove(x1, y1, x2, y2)) {
@@ -13,6 +17,11 @@ public class GameManager {
         char p = board.setPiece(board.removePiece(x1, y1), x2, y2);
         if (p != ' ') captured.add(p);
     }
+
+    public char[][] getCharArr() {
+        return board.getCharArr();
+    }
+
 
     /**
      * Returns the point value of a chess piece.
