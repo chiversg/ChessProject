@@ -1,5 +1,6 @@
 package chess.backend;
 
+import chess.frontend.Client;
 import chess.utilities.ChessUtil.TurnType;
 
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.ArrayList;
 public class GameManager {
     private ChessBoard board = new ChessBoard();
     private ArrayList<Character> captured = new ArrayList<>();
+    public Client client;
 
     public TurnType turnType = TurnType.White;
 

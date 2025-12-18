@@ -30,17 +30,9 @@ public class Client {
         Reference = this;
         log = new Log();
         boardManager = new BoardManager(100, 100, this);
+        gameManager.client = this;
 
-        board = new char[][]{ //white is capital, black is lowercase
-                {'r', 'n', 'b', 'k', 'q', 'b', 'n', 'r'},
-                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
-                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
-                {'R', 'N', 'B', 'K', 'Q', 'B', 'N', 'R'}
-        };
+        board = gameManager.getCharArr();
 
         loadImages();
 
