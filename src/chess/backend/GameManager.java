@@ -67,10 +67,10 @@ public class GameManager {
         } else {
             if (!isEnemy(p, t)) return false;
             if (Character.isUpperCase(p)) {
-                return (x2 == x1 + 1 || x2 == x1-1) && y2 == y1 + 1;
+                return (x2 == x1 + 1 || x2 == x1-1) && y2 == y1 - 1;
             }
             else {
-                return (x2 == x1 + 1 || x2 == x1-1) && y2 == y1 - 1;
+                return (x2 == x1 + 1 || x2 == x1-1) && y2 == y1 + 1;
             }
         }
 
