@@ -10,10 +10,6 @@ public class Log {
     private JTextArea minimaxData;
     private int lineNumber = 1;
 
-    public Log() {
-
-    }
-
     public JPanel GeneratePanel() {
 
         JPanel container = new JPanel();

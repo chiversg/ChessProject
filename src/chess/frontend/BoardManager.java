@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
  */
 public class BoardManager {
     BoardTile[][] pieces = new BoardTile[8][8];
-    JLabel[][] effects = new JLabel[8][8];
+    JLabel[][] highlights = new JLabel[8][8];
     int[] boardOrigin = new int[2];
     Client client;
 
@@ -72,7 +72,7 @@ public class BoardManager {
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 JLabel icon = new JLabel();
-                effects[j][i] = icon;
+                highlights[j][i] = icon;
                 effectLayer.add(icon);
             }
         }
@@ -97,14 +97,14 @@ public class BoardManager {
         pieces[y - 1][x - 1].setIcon(new ImageIcon(icon));
     }
 
-    public void UpdateEffectIcon(int x, int y, BufferedImage icon) {
-        effects[x - 1][y - 1].setIcon(new ImageIcon(icon));
+    public void UpdateBoardHighlight(int x, int y, BufferedImage icon) {
+        highlights[x - 1][y - 1].setIcon(new ImageIcon(icon));
     }
 
-    private void removeEffectIcons() {
-        for (int i = 0; i < effects.length; i++) {
-            for (int j = 0; j < effects[i].length; j++) {
-                effects[i][j].setIcon(null);
+    public void RemoveBoardHighlights() {
+        for (int i = 0; i < highlights.length; i++) {
+            for (int j = 0; j < highlights[i].length; j++) {
+                highlights[i][j].setIcon(null);
             }
         }
     }
@@ -114,7 +114,6 @@ public class BoardManager {
         System.out.println(pieces[y1 - 1][x1 - 1]);
         pieces[x1 - 1][y1 - 1].setIcon(null);
         pieces[x2 - 1][y2 - 1].setIcon(piece);
-        removeEffectIcons();
     }
 
     public boolean IsEmptyTile(int x, int y) {

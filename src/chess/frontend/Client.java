@@ -5,8 +5,6 @@ import chess.backend.GameManager;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -15,21 +13,34 @@ import java.util.Arrays;
 
 public class Client extends Thread {
     static Client Reference;
+    private char[][] board;
     BufferedImage bKing, bQueen, bRook, bBishop, bKnight, bPawn;    //Black piece icons
     BufferedImage wKing, wQueen, wRook, wBishop, wKnight, wPawn;    //White piece icons
     BufferedImage background, validBorder, selectedBorder;          //Misc. images
-    private int[] selected = {-1, -1};    //Coordinates of the selected piece
-    private int[] destination = {-1, -1}; //Coordinates of the destination
+    private Point fromPos = new Point(-1, -1);    //Coordinates of the selected piece
+    private Point toPos = new Point(-1, -1); //Coordinates of the destination
     private boolean newTurn;
     private boolean gameOver;
     private Log log;
     private BoardManager boardManager;
     private GameManager gameManager;
+    Point to = new Point();
 
     public Client() {
         Reference = this;
         log = new Log();
         boardManager = new BoardManager(100, 100, this);
+
+        board = new char[][]{ //white is capital, black is lowercase
+                {'r', 'n', 'b', 'k', 'q', 'b', 'n', 'r'},
+                {'p', 'p', 'p', 'p', 'p', 'p', 'p', 'p'},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '},
+                {'P', 'P', 'P', 'P', 'P', 'P', 'P', 'P'},
+                {'R', 'N', 'B', 'K', 'Q', 'B', 'N', 'R'}
+        };
 
         loadImages();
 
@@ -40,7 +51,7 @@ public class Client extends Thread {
         frame.setLayout(null);
 
         buildBoard(frame);
-
+        ReceiveNewBoard(board);
         frame.setVisible(true);
 
         log.UpdateMinimaxLog(10, 2, 43.56646f);
@@ -52,9 +63,9 @@ public class Client extends Thread {
             if (newTurn) {
                 //TODO Sync client board to match backend
                 while (true) {
-                    if (selected[0] < 0) {
+                    if (fromPos.x < 0) {
                         selectPiece();
-                    } else if (destination[0] < 0) {
+                    } else if (toPos.x < 0) {
                         selectDestination();
                     } else {
                         //TODO Call GameManager input move
@@ -68,7 +79,6 @@ public class Client extends Thread {
     }
 
     private void buildBoard(JFrame frame) {
-
         JPanel boardUI = boardManager.GeneratePanel(background);
         JPanel logUI = log.GeneratePanel();
 
@@ -107,28 +117,66 @@ public class Client extends Thread {
         };
     }
 
-    public void TileClicked(int x, int y) {
-        if (selected[0] < 0 && !boardManager.IsEmptyTile(x, y)) {
-            System.out.println("start point selected");
-            selected[0] = x;
-            selected[1] = y;
-            boardManager.UpdateEffectIcon(x, y, selectedBorder);
-        } else if(selected[0] > 0) {
-            System.out.println("destination selected");
-            destination[0] = x;
-            destination[1] = y;
+    private BufferedImage letterToImage(char letter) {
+        return switch (letter) {
+            case 'P' -> wPawn;
+            case 'R' -> wRook;
+            case 'N' -> wKnight;
+            case 'B' -> wBishop;
+            case 'K' -> wKing;
+            case 'Q' -> wQueen;
+            case 'p' -> bPawn;
+            case 'r' -> bRook;
+            case 'n' -> bKnight;
+            case 'b' -> bBishop;
+            case 'k' -> bKing;
+            case 'q' -> bQueen;
+            default -> null;
+        };
+    }
 
-            if(!Arrays.equals(selected, destination)) checkMove();
+    public void TileClicked(int x, int y) {
+        if (fromPos.x < 0 && !boardManager.IsEmptyTile(x, y)) {
+            System.out.println("start point selected");
+            fromPos.x = x;
+            fromPos.y = y;
+            boardManager.UpdateBoardHighlight(x, y, selectedBorder);
+        } else if (fromPos.x > 0) {
+            System.out.println("destination selected");
+            toPos.x = x;
+            toPos.y = y;
+
+            if (!fromPos.equals(toPos)) checkMove();
         }
     }
 
     private void checkMove() {
         //I would call the backend to verify if the move is valid
-        System.out.println("It's movin' time");
-        boardManager.MovePiece(selected[0], selected[1], destination[0], destination[1]);
-        log.UpdateMoveLog(selected[0] + ", " + selected[0] + " -> " + destination[0] + ", " + destination[0]);
-        Arrays.fill(selected, -1);
-        Arrays.fill(destination, -1);
+        if (true) {
+            System.out.println("It's movin' time");
+
+            boardManager.MovePiece(fromPos.x, fromPos.y, toPos.x, toPos.y);
+            log.UpdateMoveLog(fromPos.x + ", " + fromPos.y + " -> " + toPos.x + ", " + toPos.y);
+
+            //Reset Destinations
+        }
+        //Always remove board highlights and from and to
+        fromPos.setLocation(-1, -1);
+        toPos.setLocation(-1, -1);
+        boardManager.RemoveBoardHighlights();
+    }
+
+    public void ReceiveNewBoard(char[][] newBoard) {
+        board = newBoard;
+        BufferedImage piece;
+        for (int i = 0; i < newBoard.length; i++) {
+            for (int j = 0; j < newBoard[i].length; j++) {
+                piece = letterToImage(newBoard[j][i]);
+                if(piece != null) {
+                    boardManager.UpdatePieceIcon(j + 1, i + 1, piece);
+                }
+            }
+        }
     }
 
 
