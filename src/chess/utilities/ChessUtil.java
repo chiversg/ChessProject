@@ -47,5 +47,23 @@ package chess.utilities;
                 case CPU -> false;
             };
         }
+
+        /**
+         * Returns the point value of a chess piece.
+         *
+         * @param p the piece character
+         * @return the piece value, or -1 if invalid
+         */
+        public static int pieceValue(char p) {
+            p = Character.toLowerCase(p);
+            return switch (p) {
+                case 'p' -> 1;
+                case 'n', 'b' -> 3;
+                case 'r' -> 5;
+                case 'q' -> 9;
+                case 'k' -> Integer.MAX_VALUE;
+                default -> -1;
+            };
+        }
     }
 
