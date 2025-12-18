@@ -1,5 +1,7 @@
 package chess.frontend;
 
+import chess.utilities.ChessUtil;
+
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
@@ -8,6 +10,7 @@ import java.io.*;
 public class Log {
     private JTextArea moveLog;
     private JTextArea minimaxData;
+    private JLabel turnLabel;
     private int lineNumber = 1;
 
     public JPanel GeneratePanel() {
@@ -17,7 +20,8 @@ public class Log {
         container.setLayout(new BoxLayout(container, BoxLayout.PAGE_AXIS));
 
         //Title
-        JLabel moveLogTitle = new JLabel("MOVE LOG", JLabel.CENTER);
+        JLabel moveLogTitle = new JLabel("MOVE LOG");
+        moveLogTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         //Move Log
         moveLog = new JTextArea();
@@ -26,6 +30,12 @@ public class Log {
 
         JScrollPane scrollPane = new JScrollPane(moveLog, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setPreferredSize(new Dimension(200, 200));
+
+        //Current Move
+        turnLabel = new JLabel("WHITE TO MOVE");
+        turnLabel.setFont(new Font("San Serif", Font.PLAIN, 20));
+        turnLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         //Minimax Data
         minimaxData = new JTextArea();
         minimaxData.setEditable(false);
@@ -37,7 +47,7 @@ public class Log {
 
         container.add(moveLogTitle);
         container.add(scrollPane);
-        container.add(Box.createRigidArea(new Dimension(200, 20)));
+        container.add(turnLabel);
         container.add(minimaxData);
 
         container.setBounds(500, 100, container.getWidth(), container.getHeight());
@@ -56,5 +66,17 @@ public class Log {
                         "Best Move: " + best + '\n' +
                         "Search Time: " + Math.round(time * Math.pow(10, 2)) / Math.pow(10, 2) + "s");
     }
-
+    public void UpdateTurnLabel(ChessUtil.TurnType turn){
+        switch(turn){
+            case White:
+                turnLabel.setText("WHITE TO MOVE");
+                break;
+            case Black:
+                turnLabel.setText("BLACK TO MOVE");
+                break;
+            case CPU:
+                turnLabel.setText("CPU IS THINKING");
+                break;
+        }
+    }
 }

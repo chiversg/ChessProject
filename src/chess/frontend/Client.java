@@ -1,5 +1,6 @@
 package chess.frontend;
 
+import chess.utilities.ChessUtil;
 import chess.backend.GameManager;
 
 import javax.imageio.ImageIO;
@@ -8,10 +9,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 
-public class Client extends Thread {
+public class Client {
     static Client Reference;
     private char[][] board;
     BufferedImage bKing, bQueen, bRook, bBishop, bKnight, bPawn;    //Black piece icons
@@ -19,8 +19,7 @@ public class Client extends Thread {
     BufferedImage background, validBorder, selectedBorder;          //Misc. images
     private Point fromPos = new Point(-1, -1);    //Coordinates of the selected piece
     private Point toPos = new Point(-1, -1); //Coordinates of the destination
-    private boolean newTurn;
-    private boolean gameOver;
+    private ChessUtil.TurnType currentTurn;
     private Log log;
     private BoardManager boardManager;
     private GameManager gameManager;
@@ -51,31 +50,10 @@ public class Client extends Thread {
         frame.setLayout(null);
 
         buildBoard(frame);
-        ReceiveNewBoard(board);
+        ReceiveNewTurn(board, ChessUtil.TurnType.White);
         frame.setVisible(true);
 
         log.UpdateMinimaxLog(10, 2, 43.56646f);
-    }
-
-    public void run() {
-        while (!gameOver) {
-            //TODO Receive new turn from backend
-            if (newTurn) {
-                //TODO Sync client board to match backend
-                while (true) {
-                    if (fromPos.x < 0) {
-                        selectPiece();
-                    } else if (toPos.x < 0) {
-                        selectDestination();
-                    } else {
-                        //TODO Call GameManager input move
-                        break;
-                    }
-                }
-                newTurn = false;
-            }
-            //TODO Receive game over command from backend
-        }
     }
 
     private void buildBoard(JFrame frame) {
@@ -84,37 +62,58 @@ public class Client extends Thread {
 
         frame.add(boardUI);
         frame.add(logUI);
-        //frame.add(board, BorderLayout.CENTER);
-        boardManager.UpdatePieceIcon(1, 2, wPawn);
     }
 
-    static char numberToLetter(int number) {
-        return switch (number) {
-            case 1 -> 'a';
-            case 2 -> 'b';
-            case 3 -> 'c';
-            case 4 -> 'd';
-            case 5 -> 'e';
-            case 6 -> 'f';
-            case 7 -> 'g';
-            case 8 -> 'h';
-            default -> '-';
-        };
+    public void TileClicked(int x, int y) {
+        if (fromPos.x < 0 && !boardManager.IsEmptyTile(x, y)) {
+            System.out.println("start point selected");
+            fromPos.x = x;
+            fromPos.y = y;
+            boardManager.UpdateBoardHighlight(x, y, selectedBorder);
+        } else if (fromPos.x > 0) {
+            System.out.println("destination selected");
+            toPos.x = x;
+            toPos.y = y;
+
+            checkMove();
+        }
     }
 
-    private int letterToNumber(char letter) {
-        letter = Character.toLowerCase(letter);
-        return switch (letter) {
-            case 'a' -> 1;
-            case 'b' -> 2;
-            case 'c' -> 3;
-            case 'd' -> 4;
-            case 'e' -> 5;
-            case 'f' -> 6;
-            case 'g' -> 7;
-            case 'h' -> 8;
-            default -> -1;
-        };
+    private void checkMove() {
+        //I would call the backend to verify if the move is valid
+        if (!fromPos.equals(toPos)) {
+            System.out.println("It's movin' time");
+
+            boardManager.MovePiece(fromPos.x, fromPos.y, toPos.x, toPos.y);
+            log.UpdateMoveLog(fromPos.x + ", " + fromPos.y + " -> " + toPos.x + ", " + toPos.y);
+
+            //Reset Destinations
+        }
+        //Always remove board highlights and from and to
+        fromPos.setLocation(-1, -1);
+        toPos.setLocation(-1, -1);
+        boardManager.RemoveBoardHighlights();
+    }
+
+    public void ReceiveNewTurn(char[][] newBoard, ChessUtil.TurnType turn) {
+        // Update the internal board reference to match the backend
+        currentTurn = turn;
+        board = newBoard;
+
+        // Loop through the new board,
+        // place pieces on the GUI board accordingly
+        BufferedImage piece;
+        for (int i = 0; i < newBoard.length; i++) {
+            for (int j = 0; j < newBoard[i].length; j++) {
+                piece = letterToImage(newBoard[j][i]);
+                if (piece != null) {
+                    boardManager.UpdatePieceIcon(j + 1, i + 1, piece);
+                }
+            }
+        }
+
+        //Update Log
+        log.UpdateTurnLabel(currentTurn);
     }
 
     private BufferedImage letterToImage(char letter) {
@@ -135,96 +134,25 @@ public class Client extends Thread {
         };
     }
 
-    public void TileClicked(int x, int y) {
-        if (fromPos.x < 0 && !boardManager.IsEmptyTile(x, y)) {
-            System.out.println("start point selected");
-            fromPos.x = x;
-            fromPos.y = y;
-            boardManager.UpdateBoardHighlight(x, y, selectedBorder);
-        } else if (fromPos.x > 0) {
-            System.out.println("destination selected");
-            toPos.x = x;
-            toPos.y = y;
-
-            if (!fromPos.equals(toPos)) checkMove();
-        }
-    }
-
-    private void checkMove() {
-        //I would call the backend to verify if the move is valid
-        if (true) {
-            System.out.println("It's movin' time");
-
-            boardManager.MovePiece(fromPos.x, fromPos.y, toPos.x, toPos.y);
-            log.UpdateMoveLog(fromPos.x + ", " + fromPos.y + " -> " + toPos.x + ", " + toPos.y);
-
-            //Reset Destinations
-        }
-        //Always remove board highlights and from and to
-        fromPos.setLocation(-1, -1);
-        toPos.setLocation(-1, -1);
-        boardManager.RemoveBoardHighlights();
-    }
-
-    public void ReceiveNewBoard(char[][] newBoard) {
-        board = newBoard;
-        BufferedImage piece;
-        for (int i = 0; i < newBoard.length; i++) {
-            for (int j = 0; j < newBoard[i].length; j++) {
-                piece = letterToImage(newBoard[j][i]);
-                if(piece != null) {
-                    boardManager.UpdatePieceIcon(j + 1, i + 1, piece);
-                }
-            }
-        }
-    }
-
-
-    //TODO Implement function logic
-    private void selectPiece() {
-        //Detect mouse position on client and when mouse is clicked
-
-        //Convert mouse position into coordinates on the grid
-
-        //Check if there is a piece on the tile
-
-        //Check if that piece belongs to whoever turn it is
-
-        //Update the current selected piece
-
-        //Get a list of valid moves for selected piece
-    }
-
-    //TODO Implement function logic
-    private void selectDestination() {
-        //Detect mouse position on client and when mouse is clicked
-
-        //Convert mouse position into coordinates on the grid
-
-        //Check if tile is in valid move list
-
-        //Update destination if so
-    }
-
     private void loadImages() {
         try {
-            bKing = ImageIO.read(new File("src/chess/frontend/icons/black_king.png"));
-            bQueen = ImageIO.read(new File("src/chess/frontend/icons/black_queen.png"));
-            bRook = ImageIO.read(new File("src/chess/frontend/icons/black_rook.png"));
-            bBishop = ImageIO.read(new File("src/chess/frontend/icons/black_bishop.png"));
-            bKnight = ImageIO.read(new File("src/chess/frontend/icons/black_knight.png"));
-            bPawn = ImageIO.read(new File("src/chess/frontend/icons/black_pawn.png"));
+            bKing = ImageIO.read(new File(ChessUtil.iconPath + "black_king.png"));
+            bQueen = ImageIO.read(new File(ChessUtil.iconPath + "black_queen.png"));
+            bRook = ImageIO.read(new File(ChessUtil.iconPath + "black_rook.png"));
+            bBishop = ImageIO.read(new File(ChessUtil.iconPath + "black_bishop.png"));
+            bKnight = ImageIO.read(new File(ChessUtil.iconPath + "black_knight.png"));
+            bPawn = ImageIO.read(new File(ChessUtil.iconPath + "black_pawn.png"));
 
-            wKing = ImageIO.read(new File("src/chess/frontend/icons/white_king.png"));
-            wQueen = ImageIO.read(new File("src/chess/frontend/icons/white_queen.png"));
-            wRook = ImageIO.read(new File("src/chess/frontend/icons/white_rook.png"));
-            wBishop = ImageIO.read(new File("src/chess/frontend/icons/white_bishop.png"));
-            wKnight = ImageIO.read(new File("src/chess/frontend/icons/white_knight.png"));
-            wPawn = ImageIO.read(new File("src/chess/frontend/icons/white_pawn.png"));
+            wKing = ImageIO.read(new File(ChessUtil.iconPath + "white_king.png"));
+            wQueen = ImageIO.read(new File(ChessUtil.iconPath + "white_queen.png"));
+            wRook = ImageIO.read(new File(ChessUtil.iconPath + "white_rook.png"));
+            wBishop = ImageIO.read(new File(ChessUtil.iconPath + "white_bishop.png"));
+            wKnight = ImageIO.read(new File(ChessUtil.iconPath + "white_knight.png"));
+            wPawn = ImageIO.read(new File(ChessUtil.iconPath + "white_pawn.png"));
 
-            background = ImageIO.read(new File("src/chess/frontend/icons/board.png"));
-            selectedBorder = ImageIO.read(new File("src/chess/frontend/icons/selected_border.png"));
-            validBorder = ImageIO.read(new File("src/chess/frontend/icons/valid_move_border.png"));
+            background = ImageIO.read(new File(ChessUtil.iconPath + "board.png"));
+            selectedBorder = ImageIO.read(new File(ChessUtil.iconPath + "selected_border.png"));
+            validBorder = ImageIO.read(new File(ChessUtil.iconPath + "valid_move_border.png"));
         } catch (IOException e) {
             System.out.println("There was an error loading images");
         }

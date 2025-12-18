@@ -1,5 +1,7 @@
 package chess.frontend;
 
+import chess.utilities.ChessUtil;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -47,7 +49,7 @@ public class BoardManager {
         hLabels.setLayout(new GridLayout(1, 8));
         hLabels.setBounds(0, 0, board.getWidth(), board.getHeight() / 8);
         for (int i = 0; i < 8; i++) {
-            JLabel label = new JLabel(String.valueOf(Client.numberToLetter(i + 1)), JLabel.CENTER);
+            JLabel label = new JLabel(String.valueOf(ChessUtil.numberToLetter(i + 1)), JLabel.CENTER);
             hLabels.add(label);
         }
 
