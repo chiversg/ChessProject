@@ -9,7 +9,7 @@ import java.util.LinkedList;
 
 public class GameManager {
     private ChessBoard board = new ChessBoard();
-    private ArrayList<Character> captured = new ArrayList<>();
+    public ArrayList<Character> captured = new ArrayList<>();
     public Client client;
 
     public TurnType turnType = TurnType.White;
@@ -20,37 +20,23 @@ public class GameManager {
         }
         char p = board.setPiece(board.removePiece(x1, y1), x2, y2);
         if (p != ' ') captured.add(p);
+
+        turnType = (turnType == TurnType.White) ? TurnType.Black : TurnType.White;
+        client.boardStateChanged();
     }
 
     public char[][] getCharArr() {
         return board.getCharArr();
     }
-
-
-    /**
-     * Returns the point value of a chess piece.
-     *
-     * @param p the piece character
-     * @return the piece value, or -1 if invalid
-     */
-    public static int pieceValue(char p) {
-        p = Character.toLowerCase(p);
-        return switch (p) {
-            case 'p' -> 1;
-            case 'n', 'b' -> 3;
-            case 'r' -> 5;
-            case 'q' -> 9;
-            case 'k' -> Integer.MAX_VALUE;
-            default -> -1;
-        };
-    }
-
-
-    //TODO actually make this shitty fucking method.
+    
     public boolean validMove(int x1, int y1, int x2, int y2) {
         if (x1-x2 == 0 && y1-y2 == 0) return false;
         char p = board.getPiece(x1, y1);
         char t = board.getPiece(x2, y2);
+        if (Character.isUpperCase(p) && turnType != TurnType.White ||
+        Character.isLowerCase(p) && turnType != TurnType.Black) {
+            return false;
+        }
         return switch (Character.toLowerCase(p)) {
             case 'p' -> pawnValid(x1, y1, x2, y2, p, t);
             case 'n' -> knightValid(x1, y1, x2, y2, p, t);
