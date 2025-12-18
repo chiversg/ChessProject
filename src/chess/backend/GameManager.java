@@ -28,12 +28,7 @@ public class GameManager {
     public char[][] getCharArr() {
         return board.getCharArr();
     }
-
-
-
-
-
-    //TODO actually make this shitty fucking method.
+    
     public boolean validMove(int x1, int y1, int x2, int y2) {
         if (x1-x2 == 0 && y1-y2 == 0) return false;
         char p = board.getPiece(x1, y1);
