@@ -1,4 +1,4 @@
-package chess.backend;
+package chess.ai;
 
 public class Minimax {
 

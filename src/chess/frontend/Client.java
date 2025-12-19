@@ -65,9 +65,9 @@ public class Client {
     public void TileClicked(int x, int y) {
         if (fromPos.x < 0 && !boardManager.IsEmptyTile(x, y)) {
             System.out.println("start point selected");
-            LinkedList<Point> validTiles = gameManager.allValidMoves(x-1, y-1);
+            LinkedList<Point> validTiles = gameManager.allValidMoves(x, y);
             for(Point p : validTiles){
-                boardManager.UpdateBoardHighlight(p.x+1, p.y+1, validBorder);
+                boardManager.UpdateBoardHighlight(p.x, p.y, validBorder);
             }
             fromPos.x = x;
             fromPos.y = y;
@@ -84,11 +84,10 @@ public class Client {
     private void checkMove() {
         if (!fromPos.equals(toPos)) {
             try {
-                gameManager.makeMove(fromPos.x -1, fromPos.y - 1, toPos.x - 1, toPos.y -1);
+                gameManager.makeMove(fromPos.x, fromPos.y, toPos.x, toPos.y);
                 System.out.println("It's movin' time");
 
-                boardManager.MovePiece(fromPos.x, fromPos.y, toPos.x, toPos.y);
-                log.UpdateMoveLog(fromPos.x + ", " + fromPos.y + " -> " + toPos.x + ", " + toPos.y);
+                log.UpdateMoveLog((fromPos.x + 1) + ", " + (fromPos.y + 1) + " -> " + (toPos.x + 1) + ", " + (toPos.y + 1));
 
             } catch (InvalidMoveException e) {
                 System.out.println("Invalid Move");
@@ -105,6 +104,7 @@ public class Client {
 public void boardStateChanged() {
     char[][] newBoard = gameManager.getCharArr();
     TurnType turn = gameManager.turnType;
+    boardManager.RemovePieceIcons();
 
     // Loop through the new board,
     // place pieces on the GUI board accordingly
@@ -113,7 +113,7 @@ public void boardStateChanged() {
         for (int j = 0; j < newBoard[i].length; j++) {
             piece = letterToImage(newBoard[j][i]);
             if (piece != null) {
-                boardManager.UpdatePieceIcon(j + 1, i + 1, piece);
+                boardManager.UpdatePieceIcon(j, i, piece);
             }
         }
     }

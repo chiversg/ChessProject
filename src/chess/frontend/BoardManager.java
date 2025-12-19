@@ -60,7 +60,7 @@ public class BoardManager {
         pieceLayer.setBounds(0, 0, board.getWidth(), board.getHeight());
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
-                BoardTile icon = new BoardTile(j + 1, i + 1);
+                BoardTile icon = new BoardTile(j, i);
                 pieces[j][i] = icon;
                 pieceLayer.add(icon);
             }
@@ -96,30 +96,38 @@ public class BoardManager {
     }
 
     public void UpdatePieceIcon(int x, int y, BufferedImage icon) {
-        pieces[y - 1][x - 1].setIcon(new ImageIcon(icon));
+        pieces[y][x].setIcon(new ImageIcon(icon));
+    }
+
+    public void RemovePieceIcons() {
+        for (BoardTile[] row : pieces) {
+            for (BoardTile tile : row) {
+                tile.setIcon(null);
+            }
+        }
     }
 
     public void UpdateBoardHighlight(int x, int y, BufferedImage icon) {
-        highlights[x - 1][y - 1].setIcon(new ImageIcon(icon));
+        highlights[x][y].setIcon(new ImageIcon(icon));
     }
 
     public void RemoveBoardHighlights() {
-        for (int i = 0; i < highlights.length; i++) {
-            for (int j = 0; j < highlights[i].length; j++) {
-                highlights[i][j].setIcon(null);
+        for (JLabel[] row : highlights) {
+            for (JLabel highlight : row) {
+                highlight.setIcon(null);
             }
         }
     }
 
     public void MovePiece(int x1, int y1, int x2, int y2) {
-        Icon piece = pieces[x1 - 1][y1 - 1].getIcon();
-        System.out.println(pieces[y1 - 1][x1 - 1]);
-        pieces[x1 - 1][y1 - 1].setIcon(null);
-        pieces[x2 - 1][y2 - 1].setIcon(piece);
+        Icon piece = pieces[x1][y1].getIcon();
+        System.out.println(pieces[y1][x1]);
+        pieces[x1][y1].setIcon(null);
+        pieces[x2][y2].setIcon(piece);
     }
 
     public boolean IsEmptyTile(int x, int y) {
-        Icon piece = pieces[x - 1][y - 1].getIcon();
+        Icon piece = pieces[x][y].getIcon();
         return piece == null;
     }
 
