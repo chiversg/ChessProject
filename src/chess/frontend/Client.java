@@ -63,7 +63,7 @@ public class Client {
     }
 
     public void TileClicked(int x, int y) {
-        if (fromPos.x < 0 && !boardManager.IsEmptyTile(x, y)) {
+        if (fromPos.x <= 0 && !boardManager.IsEmptyTile(x, y)) {
             System.out.println("start point selected");
             LinkedList<Point> validTiles = gameManager.allValidMoves(x, y);
             for(Point p : validTiles){
@@ -72,7 +72,7 @@ public class Client {
             fromPos.x = x;
             fromPos.y = y;
             boardManager.UpdateBoardHighlight(x, y, selectedBorder);
-        } else if (fromPos.x > 0) {
+        } else if (fromPos.x >= 0) {
             System.out.println("destination selected");
             toPos.x = x;
             toPos.y = y;
@@ -102,16 +102,16 @@ public class Client {
 
 
 public void boardStateChanged() {
-    char[][] newBoard = gameManager.getCharArr();
-    TurnType turn = gameManager.turnType;
+    board = gameManager.getCharArr();
+    currentTurn = gameManager.turnType;
     boardManager.RemovePieceIcons();
-
+    log.UpdateTurnLabel(currentTurn);
     // Loop through the new board,
     // place pieces on the GUI board accordingly
     BufferedImage piece;
-    for (int i = 0; i < newBoard.length; i++) {
-        for (int j = 0; j < newBoard[i].length; j++) {
-            piece = letterToImage(newBoard[j][i]);
+    for (int i = 0; i < board.length; i++) {
+        for (int j = 0; j < board[i].length; j++) {
+            piece = letterToImage(board[j][i]);
             if (piece != null) {
                 boardManager.UpdatePieceIcon(j, i, piece);
             }
