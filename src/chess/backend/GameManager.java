@@ -48,6 +48,25 @@ public class GameManager {
         };
     }
 
+    public boolean validMove(int x1, int y1, int x2, int y2, ChessBoard board, TurnType turnType) {
+        if (x1-x2 == 0 && y1-y2 == 0) return false;
+        char p = board.getPiece(x1, y1);
+        char t = board.getPiece(x2, y2);
+        if (Character.isUpperCase(p) && turnType != TurnType.White ||
+                Character.isLowerCase(p) && turnType != TurnType.Black) {
+            return false;
+        }
+        return switch (Character.toLowerCase(p)) {
+            case 'p' -> pawnValid(x1, y1, x2, y2, p, t);
+            case 'n' -> knightValid(x1, y1, x2, y2, p, t);
+            case 'b' -> bishopValid(x1, y1, x2, y2, p, t);
+            case 'r' -> rookValid(x1, y1, x2, y2, p, t);
+            case 'q' -> queenValid(x1, y1, x2, y2, p, t);
+            case 'k' -> kingValid(x1, y1, x2, y2, p, t);
+            default -> false;
+        };
+    }
+
     //region validMove helpers
 
     private boolean isEnemy(char p, char t) {
