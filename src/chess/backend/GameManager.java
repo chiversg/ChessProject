@@ -9,6 +9,8 @@ import java.util.LinkedList;
 
 public class GameManager {
     private ChessBoard board = new ChessBoard();
+
+
     public ArrayList<Character> captured = new ArrayList<>();
     public Client client;
 
@@ -16,12 +18,26 @@ public class GameManager {
 
     public void makeMove(int x1, int y1, int x2, int y2) {
         if (!validMove(x1, y1, x2, y2)) {
-            throw new InvalidMoveException(""); //TODO add actual error message
+            throw new InvalidMoveException("");
         }
-        char p = board.setPiece(board.removePiece(x1, y1), x2, y2);
-        if (p != ' ') captured.add(p);
 
-        turnType = (turnType == TurnType.White) ? TurnType.Black : TurnType.White;
+
+
+
+            char p = board.setPiece(board.removePiece(x1, y1), x2, y2);
+            if (p != ' ') captured.add(p);
+
+
+
+       if (turnType == TurnType.White) {
+           turnType = TurnType.Black;
+
+       }
+       else {
+           turnType = TurnType.White;
+
+       }
+
         client.boardStateChanged();
     }
 
@@ -55,13 +71,28 @@ public class GameManager {
                 (Character.isLowerCase(t) && Character.isUpperCase(p));
     }
 
-    //TODO add en passant support, promotion, initial +2 move
+    //TODO add en passant support, promotion
     private boolean pawnValid(int x1, int y1, int x2, int y2, char p, char t) {
+        if (enPassantValid(x1, y1, x2, y2, p)) return true;
         if (t == ' ') {
             if (Character.isUpperCase(p)) {
-                return x2 == x1 && y2 == y1 - 1;
+                if (x2 == x1) {
+                    if (y2 == y1 - 1) return true;
+                    if (y1 == 6 && y2 == y1-2) {
+
+
+                        return true;
+                    }
+                }
+
             } else {
-                return x2 == x1 && y2 == y1 + 1;
+                if (x2 == x1) {
+                    if (y2 == y1 + 1) return true;
+                    if (y1 == 1 && y2 == y1+2) {
+
+                        return true;
+                    }
+                }
             }
 
         } else {
@@ -74,7 +105,14 @@ public class GameManager {
             }
         }
 
+        return false;
     }
+
+    private boolean enPassantValid(int x1, int y1, int x2, int y2, char p) {
+        return false;
+
+    }
+
 
 
 private boolean knightValid(int x1, int y1, int x2, int y2, char p, char t) {
