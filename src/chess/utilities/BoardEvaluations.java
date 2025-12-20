@@ -86,7 +86,7 @@ public class BoardEvaluations {
             case 'b' -> bishopValue;
             case 'r' -> rookValue;
             case 'q' -> queenValue;
-            case 'K' -> kingValue;
+            case 'k' -> kingValue;
             default -> new float[0][0];
         };
     }
