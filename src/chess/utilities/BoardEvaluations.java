@@ -49,7 +49,7 @@ public class BoardEvaluations {
             {-3, 0, 1.5f, 2, 2, 1.5f, 0, -3},
             {-3, 0.5f, 1, 1.5f, 1.5f, 1, 0.5f, -3},
             {-4, -2, 0, 0.5f, 0.5f, 0, -2, -4},
-            {-5, -4, -3,-3, -3, -3, -4, -5}
+            {-5, -4, -3, -3, -3, -3, -4, -5}
     };
     private static float[][] pawnValue = new float[][]{
             {0, 0, 0, 0, 0, 0, 0, 0},
@@ -91,15 +91,15 @@ public class BoardEvaluations {
         };
     }
 
-    public static float EvaluateBoard(char[][] board){
+    public static float EvaluateBoard(char[][] board) {
         float boardValue = 0;
         for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
-                  char p = board[y][x];
-                  if (p != ' ') {
-                      boardValue += pieceValue(p);
-                      boardValue += (Character.isUpperCase(p)) ? pieceSquare(p)[y][x] : pieceSquare(p)[7-y][x];
-                  }
+                char p = board[y][x];
+                if (p != ' ') {
+                    boardValue += pieceValue(p);
+                    boardValue += (Character.isUpperCase(p)) ? pieceSquare(p)[y][x] : -pieceSquare(p)[7 - y][x];
+                }
             }
         }
         return boardValue;
