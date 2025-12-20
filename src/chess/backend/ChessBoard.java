@@ -1,6 +1,10 @@
 package chess.backend;
 
+import chess.utilities.ChessUtil.*;
+
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * Stores and manages the state of a chess board.
@@ -110,6 +114,24 @@ public class ChessBoard {
         char out = board[y][x];
         board[y][x] = ' ';
         return out;
+    }
+
+    public LinkedList<Point> GetAllPieces(Turn turn) {
+        LinkedList<Point> pieces = new LinkedList<>();
+        for (int i = 0; i < board.length; i++) {
+            for (int j = 0; j < board[i].length; j++) {
+                if(turn == Turn.White) {
+                    if (Character.isUpperCase(board[i][j])) {
+                        pieces.add(new Point(j, i));
+                    }
+                } else if(turn == Turn.Black){
+                    if (!Character.isUpperCase(board[i][j])) {
+                        pieces.add(new Point(j, i));
+                    }
+                }
+            }
+        }
+        return pieces;
     }
 
     public ArrayList<Character> listPieces() {
