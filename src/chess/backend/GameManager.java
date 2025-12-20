@@ -1,7 +1,8 @@
 package chess.backend;
 
+import chess.ai.GameTree;
 import chess.frontend.Client;
-import chess.utilities.ChessUtil.TurnType;
+import chess.utilities.ChessUtil.Turn;
 
 import java.util.ArrayList;
 import java.awt.Point;
@@ -14,7 +15,18 @@ public class GameManager {
     public ArrayList<Character> captured = new ArrayList<>();
     public Client client;
 
-    public TurnType turnType = TurnType.White;
+    private GameTree gameTree;
+
+    public Turn turnType = Turn.White;
+
+    public GameManager(){
+        gameTree = new GameTree(board.copy());
+        gameTree.IncreaseTreeDepth();
+        gameTree.IncreaseTreeDepth();
+        gameTree.IncreaseTreeDepth();
+        gameTree.IncreaseTreeDepth();
+        gameTree.IncreaseTreeDepth();
+    }
 
     public void makeMove(int x1, int y1, int x2, int y2) {
         if (!validMove(x1, y1, x2, y2)) {
@@ -29,12 +41,12 @@ public class GameManager {
 
 
 
-       if (turnType == TurnType.White) {
-           turnType = TurnType.Black;
+       if (turnType == Turn.White) {
+           turnType = Turn.Black;
 
        }
        else {
-           turnType = TurnType.White;
+           turnType = Turn.White;
 
        }
 
@@ -49,8 +61,8 @@ public class GameManager {
         if (x1-x2 == 0 && y1-y2 == 0) return false;
         char p = board.getPiece(x1, y1);
         char t = board.getPiece(x2, y2);
-        if (Character.isUpperCase(p) && turnType != TurnType.White ||
-        Character.isLowerCase(p) && turnType != TurnType.Black) {
+        if (Character.isUpperCase(p) && turnType != Turn.White ||
+        Character.isLowerCase(p) && turnType != Turn.Black) {
             return false;
         }
         return switch (Character.toLowerCase(p)) {
@@ -64,12 +76,12 @@ public class GameManager {
         };
     }
 
-    public boolean validMove(int x1, int y1, int x2, int y2, ChessBoard board, TurnType turnType) {
+    public boolean validMove(int x1, int y1, int x2, int y2, ChessBoard board, Turn turnType) {
         if (x1-x2 == 0 && y1-y2 == 0) return false;
         char p = board.getPiece(x1, y1);
         char t = board.getPiece(x2, y2);
-        if (Character.isUpperCase(p) && turnType != TurnType.White ||
-                Character.isLowerCase(p) && turnType != TurnType.Black) {
+        if (Character.isUpperCase(p) && turnType != Turn.White ||
+                Character.isLowerCase(p) && turnType != Turn.Black) {
             return false;
         }
         return switch (Character.toLowerCase(p)) {
