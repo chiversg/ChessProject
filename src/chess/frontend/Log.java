@@ -4,7 +4,6 @@ import chess.utilities.ChessUtil;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.*;
 
 
 public class Log {
@@ -66,7 +65,7 @@ public class Log {
                         "Best Move: " + best + '\n' +
                         "Search Time: " + Math.round(time * Math.pow(10, 2)) / Math.pow(10, 2) + "s");
     }
-    public void UpdateTurnLabel(ChessUtil.TurnType turn){
+    public void UpdateTurnLabel(ChessUtil.Turn turn){
         switch(turn){
             case White:
                 turnLabel.setText("WHITE TO MOVE");
