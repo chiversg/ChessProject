@@ -59,11 +59,11 @@ public class LogManager {
         lineNumber++;
     }
 
-    public void UpdateMinimaxLog(int depth, float best, double time) {
+    public void UpdateMinimaxLog(int depth, float best, int time) {
         minimaxData.setText(
                 "Search Depth: " + depth + '\n' +
                         "Best Move: " + best + '\n' +
-                        "Search Time: " + Math.round(time * Math.pow(10, 2)) / Math.pow(10, 2) + "s");
+                        "Search Time: " + time + "ms");
     }
     public void UpdateTurnLabel(ChessUtil.Turn turn){
         switch(turn){
