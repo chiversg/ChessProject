@@ -26,7 +26,7 @@ public class GameManager {
     private boolean cpuIsBlack = true;
     private boolean cpuIsWhite = false;
 
-    private int check = 0;
+
 
     public GameManager() {
         gameTree = new GameTree(board.copy());
@@ -87,14 +87,14 @@ public class GameManager {
             loserString = "Black";
         }
 
-        if (!gameOver) {
+
             if (turnType == Turn.Black && cpuIsBlack) {
                 computeNextMove();
             }
             if (turnType == Turn.White && cpuIsWhite) {
                 computeNextMove();
             }
-        }
+        
 
 
 
