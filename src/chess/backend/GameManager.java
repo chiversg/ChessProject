@@ -29,7 +29,6 @@ public class GameManager {
         gameTree.IncreaseTreeDepth();
         gameTree.IncreaseTreeDepth();
         gameTree.IncreaseTreeDepth();
-        gameTree.IncreaseTreeDepth();
     }
 
     public void makeMove(int x1, int y1, int x2, int y2) {

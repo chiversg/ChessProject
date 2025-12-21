@@ -20,11 +20,6 @@ public class GameTree {
         root.Turn = Turn.White;
     }
 
-    public GameTree(ChessBoard start) {
-        root = new Node(start, null, null);
-        root.Turn = Turn.White;
-    }
-
     /**
      * Increases the tree depth by one
      */
