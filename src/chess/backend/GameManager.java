@@ -6,6 +6,7 @@ import chess.ai.Result;
 import chess.frontend.Client;
 import chess.utilities.ChessUtil.Turn;
 
+import java.awt.print.PrinterIOException;
 import java.util.ArrayList;
 import java.awt.Point;
 import java.util.LinkedList;
@@ -16,6 +17,8 @@ public class GameManager {
 
     public ArrayList<Character> captured = new ArrayList<>();
     public Client client;
+    public boolean gameOver = false;
+    public String loserString = "";
 
     private GameTree gameTree;
 
@@ -56,11 +59,41 @@ public class GameManager {
 
         client.boardStateChanged();
 
-        if (turnType == Turn.Black && cpuIsBlack) {
-            computeNextMove();
+        LinkedList<Point> possibleWhiteMoves = new LinkedList<>();
+        LinkedList<Point> possibleBlackMoves = new LinkedList<>();
+
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                char piece = board.getPiece(x, y);
+                if (Character.isUpperCase(piece)) {
+                    for (Point move : allValidMoves(x, y)) {
+                        possibleWhiteMoves.add(move);
+                    }
+                }
+                if (Character.isLowerCase(piece)) {
+                    for (Point move : allValidMoves(x, y)) {
+                        possibleBlackMoves.add(move);
+                    }
+                }
+            }
         }
-        if (turnType == Turn.White && cpuIsWhite) {
-            computeNextMove();
+
+        if (possibleWhiteMoves.isEmpty()) {
+            gameOver = true;
+            loserString = "White";
+        }
+        if (possibleBlackMoves.isEmpty()) {
+            gameOver = true;
+            loserString = "Black";
+        }
+
+        if (!gameOver) {
+            if (turnType == Turn.Black && cpuIsBlack) {
+                computeNextMove();
+            }
+            if (turnType == Turn.White && cpuIsWhite) {
+                computeNextMove();
+            }
         }
 
 
