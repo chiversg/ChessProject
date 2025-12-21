@@ -122,29 +122,42 @@ public class GameTree {
 
     public Result Minimax(Node node, int depth, boolean maximizingPlayer) {
         //Base Case. We have reached max search depth, or we have reached a terminal state
-        if (depth == 0 || isTerminal(node)) {
+        if (depth == 0 ) {
             return new Result(node, Evaluations.EvaluateBoard(node.data.getCharArr()));
         }
 
         Result value;
-        Node child = node.firstChild;
+        LinkedList<Node> children = generateAllChildren(node);
+
         if (maximizingPlayer) {
-            value = new Result(child, -Float.MAX_VALUE);
-            do{
+            value = new Result(null, -Float.MAX_VALUE);
+            for(Node child : children) {
                 value = maxResult(value, Minimax(child, depth - 1, false), child);
-                child = child.nextSibling;
-            } while(child.nextSibling != null);
-
-
+            }
         } else {
-            value = new Result(child, Float.MAX_VALUE);
-            do{
+            value = new Result (null, Float.MAX_VALUE);
+            for(Node child : children) {
                 value = minResult(value, Minimax(child, depth - 1, true), child);
-                child = child.nextSibling;
-            } while(child.nextSibling != null);
-
+            }
         }
         return value;
+    }
+
+    public LinkedList<Node> generateAllChildren(Node parent){
+        LinkedList<Point> pieces = parent.data.GetAllPieces(parent.Turn);
+        LinkedList<Node> moves = new LinkedList<>();
+        for(Point start : pieces) {
+           LinkedList<Point> valid = moveChecker.allValidMoves(start.x, start.y, parent.data, parent.Turn);
+            for(Point dest : valid){
+                ChessBoard b = parent.data.copy();
+                b.setPiece(b.removePiece(start.x, start.y), dest.x, dest.y);
+                Node n = new Node(b, start, dest, null, null);
+                n.Turn = parent.Turn == Turn.White ? Turn.Black : Turn.White;
+                moves.add(n);
+            }
+
+        }
+        return moves;
     }
 
     private boolean isTerminal(Node n){
@@ -178,6 +191,6 @@ public class GameTree {
 
     public void SetRoot(Node newRoot){
         root = newRoot;
-        IncreaseTreeDepth();
+       //IncreaseTreeDepth();
     }
 }
