@@ -5,6 +5,7 @@ import chess.ai.Node;
 import chess.ai.Result;
 import chess.frontend.Client;
 import chess.utilities.ChessUtil.Turn;
+import chess.utilities.GameSettings;
 
 import java.awt.print.PrinterIOException;
 import java.util.ArrayList;
@@ -30,10 +31,6 @@ public class GameManager {
 
     public GameManager() {
         gameTree = new GameTree(board.copy());
-        gameTree.IncreaseTreeDepth();
-        gameTree.IncreaseTreeDepth();
-        gameTree.IncreaseTreeDepth();
-        gameTree.IncreaseTreeDepth();
     }
 
     public void makeMove(int x1, int y1, int x2, int y2) {
@@ -52,10 +49,6 @@ public class GameManager {
             turnType = Turn.White;
 
         }
-
-        Node newRoot = gameTree.FindMove(new Point(x1, y1), new Point(x2, y2));
-        newRoot.PrintMove();
-        gameTree.SetRoot(newRoot);
 
         client.boardStateChanged();
 
@@ -103,9 +96,12 @@ public class GameManager {
 
     private void computeNextMove() {
         boolean isMax = turnType == Turn.White;
-        Result bestMove = gameTree.Minimax(gameTree.GetRoot(), 6, isMax);
+        Node root = new Node(board.copy(), null, null);
+        root.Turn = turnType;
+        Result bestMove = gameTree.Minimax(root, GameSettings.searchDepth, isMax);
         Node node = bestMove.state;
         System.out.println(bestMove.evaluation);
+        gameTree.SetRoot(bestMove.state);
         makeMove(node.fromPos.x, node.fromPos.y, node.toPos.x, node.toPos.y);
     }
 

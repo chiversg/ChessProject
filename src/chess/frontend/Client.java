@@ -24,6 +24,7 @@ public class Client {
     private Point toPos = new Point(-1, -1); //Coordinates of the destination
     private Turn currentTurn;
     private Log log;
+    private Options options;
     private BoardManager boardManager;
     private GameManager gameManager;
     Point to = new Point();
@@ -34,6 +35,7 @@ public class Client {
         Reference = this;
         log = new Log();
         boardManager = new BoardManager(100, 100, this);
+        options = new Options();
 
         gameManager.client = this;
 
@@ -45,7 +47,7 @@ public class Client {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.getContentPane().setBackground(Color.pink);
         frame.setSize(750, 750);
-        frame.setLayout(null);
+        frame.setLayout(new BorderLayout());
 
         buildBoard(frame);
         boardStateChanged();
@@ -55,11 +57,18 @@ public class Client {
     }
 
     private void buildBoard(JFrame frame) {
+        JPanel centrePanel = new JPanel(null);
+        centrePanel.setBackground(Color.pink);
+
         JPanel boardUI = boardManager.GeneratePanel(background);
         JPanel logUI = log.GeneratePanel();
+        JPanel settingsUI = options.GeneratePanel();
 
-        frame.add(boardUI);
-        frame.add(logUI);
+        centrePanel.add(boardUI);
+        centrePanel.add(logUI);
+
+        frame.add(centrePanel, BorderLayout.CENTER);
+        frame.add(settingsUI, BorderLayout.SOUTH);
     }
 
     public void TileClicked(int x, int y) {
