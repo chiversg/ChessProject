@@ -24,13 +24,11 @@ public class GameManager {
     private GameTree gameTree;
 
     public Turn turnType = Turn.White;
-    private boolean cpuIsBlack = true;
-    private boolean cpuIsWhite = false;
-
+    private Result latestResult;
 
 
     public GameManager() {
-        gameTree = new GameTree(board.copy());
+        gameTree = new GameTree();
     }
 
     public void makeMove(int x1, int y1, int x2, int y2) {
@@ -80,29 +78,35 @@ public class GameManager {
             loserString = "Black";
         }
 
-
-            if (turnType == Turn.Black && cpuIsBlack) {
-                computeNextMove();
-            }
-            if (turnType == Turn.White && cpuIsWhite) {
-                computeNextMove();
-            }
-        
-
-
-
-
+        if (turnType == Turn.Black && GameSettings.isBlackCPU) {
+            computeNextMove();
+        }
+        if (turnType == Turn.White && GameSettings.isWhiteCPU) {
+            computeNextMove();
+        }
     }
 
     private void computeNextMove() {
         boolean isMax = turnType == Turn.White;
+        float time;
+        Result bestMove;
+
         Node root = new Node(board.copy(), null, null);
         root.Turn = turnType;
-        Result bestMove = gameTree.Minimax(root, GameSettings.searchDepth, isMax);
-        Node node = bestMove.state;
-        System.out.println(bestMove.evaluation);
-        gameTree.SetRoot(bestMove.state);
-        makeMove(node.fromPos.x, node.fromPos.y, node.toPos.x, node.toPos.y);
+
+        time = System.currentTimeMillis();
+        if(GameSettings.doAlphaBeta) {
+            bestMove = gameTree.MinimaxAB(root, GameSettings.searchDepth, -Float.MAX_VALUE, Float.MAX_VALUE, isMax);
+        } else {
+            bestMove = gameTree.Minimax(root, GameSettings.searchDepth, isMax);
+        }
+        bestMove.SetTime(System.currentTimeMillis() - time);
+
+        Node bestNode = bestMove.state;
+
+        latestResult = bestMove;
+
+        makeMove(bestNode.fromPos.x, bestNode.fromPos.y, bestNode.toPos.x, bestNode.toPos.y);
     }
 
     public char[][] getCharArr() {
@@ -151,7 +155,6 @@ public class GameManager {
             default -> false;
         };
     }
-
 
 
     private boolean isKingInCheck(ChessBoard board, Turn turn) {
@@ -238,7 +241,6 @@ public class GameManager {
     private boolean enPassantValid(int x1, int y1, int x2, int y2, char p) {
         return false;
     }
-
 
 
     private boolean knightValid(int x1, int y1, int x2, int y2, char p, char t) {
@@ -342,9 +344,6 @@ public class GameManager {
     }
 
 
-
-
-
     private boolean knightValid(int x1, int y1, int x2, int y2, char p, char t, ChessBoard board, Turn turnType) {
         if (t != ' ' && !isEnemy(p, t)) return false;
         return ((x2 == x1 + 1 || x2 == x1 - 1) && (y2 == y1 + 2 || y2 == y1 - 2)) ||
@@ -420,6 +419,10 @@ public class GameManager {
             }
         }
         return list;
+    }
+
+    public Result GetResult(){
+        return latestResult;
     }
 
 }

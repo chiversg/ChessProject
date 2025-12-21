@@ -9,31 +9,37 @@ import java.awt.event.ActionListener;
 
 public class Options implements ActionListener {
     JButton confirmButton;
-    JCheckBox whiteToggle, blackToggle;
+    JRadioButton whiteToggle;
+    JRadioButton blackToggle;
+    JRadioButton noneToggle;
+    ButtonGroup cpuSelect;
     JCheckBox alphaToggle;
     JTextField searchDepthField;
-    GameSettings settings;
 
     public JPanel GeneratePanel() {
         JPanel container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.LINE_AXIS));
 
-        //White CPU TOGGLE
-        whiteToggle = new JCheckBox();
-        whiteToggle.setText("White CPU");
+        //
+        cpuSelect = new ButtonGroup();
 
-        //Black CPU TOGGLE
-        blackToggle = new JCheckBox();
-        blackToggle.setText("Black CPU");
+        //White CPU TOGGLE
+        noneToggle = new JRadioButton("No CPU", true);
+        whiteToggle = new JRadioButton("White CPU", GameSettings.isWhiteCPU);
+        blackToggle = new JRadioButton("Black CPU", GameSettings.isBlackCPU);
+
+        cpuSelect.add(whiteToggle);
+        cpuSelect.add(blackToggle);
+        cpuSelect.add(noneToggle);
 
         //Alpha-beta TOGGLE
-        alphaToggle = new JCheckBox();
+        alphaToggle = new JCheckBox("", GameSettings.doAlphaBeta);
         alphaToggle.setText("Use Alpha-Beta");
 
         //Search Depth
         JLabel sdLabel = new JLabel("Search Depth");
         searchDepthField = new JTextField();
-        searchDepthField.setText("4");
+        searchDepthField.setText(String.valueOf(GameSettings.searchDepth));
 
 
         //Confirm Button
@@ -43,6 +49,7 @@ public class Options implements ActionListener {
 
         container.add(whiteToggle);
         container.add(blackToggle);
+        container.add(noneToggle);
         container.add(alphaToggle);
         container.add(Box.createRigidArea(new Dimension(50, 20)));
         container.add(sdLabel);
@@ -56,19 +63,24 @@ public class Options implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        if (actionEvent.getSource() == confirmButton) {
+
+        if (!noneToggle.isSelected()) {
             GameSettings.isWhiteCPU = whiteToggle.isSelected();
             GameSettings.isBlackCPU = blackToggle.isSelected();
-            GameSettings.doAlphaBeta = alphaToggle.isSelected();
+        } else {
+            GameSettings.isWhiteCPU = false;
+            GameSettings.isBlackCPU = false;
+        }
 
-            String text = searchDepthField.getText();
-            if (text != null) {
-                try {
-                    GameSettings.searchDepth = Integer.parseInt(text);
-                } catch (Exception ignored) {
-                } finally {
-                    searchDepthField.setText(String.valueOf(GameSettings.searchDepth));
-                }
+        GameSettings.doAlphaBeta = alphaToggle.isSelected();
+
+        String text = searchDepthField.getText();
+        if (text != null) {
+            try {
+                GameSettings.searchDepth = Integer.parseInt(text);
+            } catch (Exception ignored) {
+            } finally {
+                searchDepthField.setText(String.valueOf(GameSettings.searchDepth));
             }
         }
     }

@@ -145,7 +145,7 @@ public class Moves {
         }
         return true;
     }
-    //TODO prevent moving into check
+
     private boolean kingValid(int x1, int y1, int x2, int y2, char p, char t) {
         if (t != ' ' && !isEnemy(p, t)) return false;
         int dX = x2-x1;

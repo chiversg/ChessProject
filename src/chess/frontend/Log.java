@@ -59,7 +59,7 @@ public class Log {
         lineNumber++;
     }
 
-    public void UpdateMinimaxLog(int depth, int best, float time) {
+    public void UpdateMinimaxLog(int depth, float best, float time) {
         minimaxData.setText(
                 "Search Depth: " + depth + '\n' +
                         "Best Move: " + best + '\n' +
