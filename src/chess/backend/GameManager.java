@@ -7,6 +7,7 @@ import chess.frontend.Client;
 import chess.utilities.ChessUtil.Turn;
 import chess.utilities.GameSettings;
 
+import java.awt.print.PrinterIOException;
 import java.util.ArrayList;
 import java.awt.Point;
 import java.util.LinkedList;
@@ -17,12 +18,16 @@ public class GameManager {
 
     public ArrayList<Character> captured = new ArrayList<>();
     public Client client;
+    public boolean gameOver = false;
+    public String loserString = "";
 
     private GameTree gameTree;
 
     public Turn turnType = Turn.White;
     private boolean cpuIsBlack = true;
     private boolean cpuIsWhite = false;
+
+
 
     public GameManager() {
         gameTree = new GameTree(board.copy());
@@ -47,12 +52,46 @@ public class GameManager {
 
         client.boardStateChanged();
 
-        if (turnType == Turn.Black && GameSettings.isBlackCPU) {
-            computeNextMove();
+        LinkedList<Point> possibleWhiteMoves = new LinkedList<>();
+        LinkedList<Point> possibleBlackMoves = new LinkedList<>();
+
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                char piece = board.getPiece(x, y);
+                if (Character.isUpperCase(piece)) {
+                    for (Point move : allValidMoves(x, y)) {
+                        possibleWhiteMoves.add(move);
+                    }
+                }
+                if (Character.isLowerCase(piece)) {
+                    for (Point move : allValidMoves(x, y)) {
+                        possibleBlackMoves.add(move);
+                    }
+                }
+            }
         }
-        if (turnType == Turn.White && GameSettings.isWhiteCPU) {
-            computeNextMove();
+
+        if (possibleWhiteMoves.isEmpty()) {
+            gameOver = true;
+            loserString = "White";
         }
+        if (possibleBlackMoves.isEmpty()) {
+            gameOver = true;
+            loserString = "Black";
+        }
+
+
+            if (turnType == Turn.Black && cpuIsBlack) {
+                computeNextMove();
+            }
+            if (turnType == Turn.White && cpuIsWhite) {
+                computeNextMove();
+            }
+        
+
+
+
+
     }
 
     private void computeNextMove() {
@@ -78,7 +117,7 @@ public class GameManager {
                 Character.isLowerCase(p) && turnType != Turn.Black) {
             return false;
         }
-        return switch (Character.toLowerCase(p)) {
+        boolean valid = switch (Character.toLowerCase(p)) {
             case 'p' -> pawnValid(x1, y1, x2, y2, p, t);
             case 'n' -> knightValid(x1, y1, x2, y2, p, t);
             case 'b' -> bishopValid(x1, y1, x2, y2, p, t);
@@ -87,6 +126,10 @@ public class GameManager {
             case 'k' -> kingValid(x1, y1, x2, y2, p, t);
             default -> false;
         };
+
+        if (!valid) return false;
+
+        return !moveLeavesKingInCheck(x1, y1, x2, y2);
     }
 
     public boolean validMove(int x1, int y1, int x2, int y2, ChessBoard board, Turn turnType) {
@@ -99,15 +142,53 @@ public class GameManager {
             return false;
         }
         return switch (Character.toLowerCase(p)) {
-            case 'p' -> pawnValid(x1, y1, x2, y2, p, t);
-            case 'n' -> knightValid(x1, y1, x2, y2, p, t);
-            case 'b' -> bishopValid(x1, y1, x2, y2, p, t);
-            case 'r' -> rookValid(x1, y1, x2, y2, p, t);
-            case 'q' -> queenValid(x1, y1, x2, y2, p, t);
-            case 'k' -> kingValid(x1, y1, x2, y2, p, t);
+            case 'p' -> pawnValid(x1, y1, x2, y2, p, t, board, turnType);
+            case 'n' -> knightValid(x1, y1, x2, y2, p, t, board, turnType);
+            case 'b' -> bishopValid(x1, y1, x2, y2, p, t, board, turnType);
+            case 'r' -> rookValid(x1, y1, x2, y2, p, t, board, turnType);
+            case 'q' -> queenValid(x1, y1, x2, y2, p, t, board, turnType);
+            case 'k' -> kingValid(x1, y1, x2, y2, p, t, board, turnType);
             default -> false;
         };
     }
+
+
+
+    private boolean isKingInCheck(ChessBoard board, Turn turn) {
+        char king = (turn == Turn.White) ? 'K' : 'k';
+
+        Point kingPos = null;
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                if (board.getPiece(x, y) == king) {
+                    kingPos = new Point(x, y);
+                }
+            }
+        }
+
+        for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+                char p = board.getPiece(x, y);
+                if (p == ' ') continue;
+                if (Character.isUpperCase(p) && turn == Turn.Black ||
+                        Character.isLowerCase(p) && turn == Turn.White) {
+                    if (validMove(x, y, kingPos.x, kingPos.y, board, turn == Turn.Black ? Turn.White : Turn.Black)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean moveLeavesKingInCheck(int x1, int y1, int x2, int y2) {
+        ChessBoard copy = board.copy();
+        char movingPiece = copy.removePiece(x1, y1);
+        char capturedPiece = copy.setPiece(movingPiece, x2, y2);
+
+        return isKingInCheck(copy, turnType);
+    }
+
 
     //region validMove helpers
 
@@ -216,6 +297,110 @@ public class GameManager {
 
     //TODO prevent moving into check
     private boolean kingValid(int x1, int y1, int x2, int y2, char p, char t) {
+        if (t != ' ' && !isEnemy(p, t)) return false;
+        int dX = x2 - x1;
+        int dY = y2 - y1;
+        if (Math.abs(dX) > 1 || Math.abs(dY) > 1) return false;
+        return true;
+    }
+
+    private boolean pawnValid(int x1, int y1, int x2, int y2, char p, char t, ChessBoard board, Turn turnType) {
+
+        if (t == ' ') {
+            if (Character.isUpperCase(p)) {
+                if (x2 == x1) {
+                    if (y2 == y1 - 1) return true;
+
+                    if (y1 == 6 && y2 == y1 - 2) {
+
+
+                        return true;
+                    }
+                }
+
+            } else {
+                if (x2 == x1) {
+                    if (y2 == y1 + 1) return true;
+
+                    if (y1 == 1 && y2 == y1 + 2) {
+
+                        return true;
+                    }
+                }
+            }
+
+        } else {
+            if (!isEnemy(p, t)) return false;
+            if (Character.isUpperCase(p)) {
+                return (x2 == x1 + 1 || x2 == x1 - 1) && y2 == y1 - 1;
+            } else {
+                return (x2 == x1 + 1 || x2 == x1 - 1) && y2 == y1 + 1;
+            }
+        }
+
+        return false;
+    }
+
+
+
+
+
+    private boolean knightValid(int x1, int y1, int x2, int y2, char p, char t, ChessBoard board, Turn turnType) {
+        if (t != ' ' && !isEnemy(p, t)) return false;
+        return ((x2 == x1 + 1 || x2 == x1 - 1) && (y2 == y1 + 2 || y2 == y1 - 2)) ||
+                ((x2 == x1 + 2 || x2 == x1 - 2) && (y2 == y1 + 1 || y2 == y1 - 1));
+    }
+
+    private boolean bishopValid(int x1, int y1, int x2, int y2, char p, char t, ChessBoard board, Turn turnType) {
+        if (t != ' ' && !isEnemy(p, t)) return false;
+        //check if move is on the diagonal
+        int dX = x2 - x1;
+        int dY = y2 - y1;
+        if (Math.abs(dY) != Math.abs(dX)) return false;
+
+        //check for pieces in the way
+        int sigX = (int) Math.signum(dX);
+        int sigY = (int) Math.signum(dY);
+        for (int i = 1; i < Math.abs(dX); i++) {
+            if (board.getPiece(x1 + i * sigX, y1 + i * sigY) != ' ') return false;
+        }
+        return true;
+    }
+
+    private boolean rookValid(int x1, int y1, int x2, int y2, char p, char t, ChessBoard board, Turn turnType) {
+        if (t != ' ' && !isEnemy(p, t)) return false;
+        //check if move is on the cardinal
+        int dX = x2 - x1;
+        int dY = y2 - y1;
+        if (dX != 0 && dY != 0) return false;
+
+        //check for pieces in the way
+        int sigX = (int) Math.signum(dX);
+        int sigY = (int) Math.signum(dY);
+        for (int i = 1; i < Math.max(Math.abs(dX), Math.abs(dY)); i++) {
+            if (board.getPiece(x1 + i * sigX, y1 + i * sigY) != ' ') return false;
+        }
+        return true;
+    }
+
+    private boolean queenValid(int x1, int y1, int x2, int y2, char p, char t, ChessBoard board, Turn turnType) {
+        if (t != ' ' && !isEnemy(p, t)) return false;
+        //check if move is on the cardinal or diagonal
+        int dX = x2 - x1;
+        int dY = y2 - y1;
+        if ((dX != 0 && dY != 0) && (Math.abs(dY) != Math.abs(dX))) return false;
+
+        //check for pieces in the way
+        int sigX = (int) Math.signum(dX);
+        int sigY = (int) Math.signum(dY);
+        for (int i = 1; i < Math.max(Math.abs(dX), Math.abs(dY)); i++) {
+            if (board.getPiece(x1 + i * sigX, y1 + i * sigY) != ' ') return false;
+        }
+        return true;
+    }
+
+    //TODO prevent moving into check
+    private boolean kingValid(int x1, int y1, int x2, int y2, char p, char t, ChessBoard board, Turn turnType) {
         if (t != ' ' && !isEnemy(p, t)) return false;
         int dX = x2 - x1;
         int dY = y2 - y1;
