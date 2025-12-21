@@ -20,7 +20,6 @@ public class GameManager {
     private GameTree gameTree;
 
     public Turn turnType = Turn.White;
-
     private boolean cpuIsBlack = true;
     private boolean cpuIsWhite = false;
 
@@ -30,17 +29,13 @@ public class GameManager {
         gameTree.IncreaseTreeDepth();
         gameTree.IncreaseTreeDepth();
         gameTree.IncreaseTreeDepth();
-        Result bestMove = gameTree.Minimax(gameTree.GetRoot(), 6, true);
-        bestMove.state.PrintMove();
-        System.out.println(bestMove.evaluation);
-        // System.out.println(bestMove.evaluation);
+        gameTree.IncreaseTreeDepth();
     }
 
     public void makeMove(int x1, int y1, int x2, int y2) {
         if (!validMove(x1, y1, x2, y2)) {
             throw new InvalidMoveException("");
         }
-
 
         char p = board.setPiece(board.removePiece(x1, y1), x2, y2);
         if (p != ' ') captured.add(p);
@@ -101,6 +96,7 @@ public class GameManager {
 
     public boolean validMove(int x1, int y1, int x2, int y2, ChessBoard board, Turn turnType) {
         if (x1 - x2 == 0 && y1 - y2 == 0) return false;
+
         char p = board.getPiece(x1, y1);
         char t = board.getPiece(x2, y2);
         if (Character.isUpperCase(p) && turnType != Turn.White ||
@@ -132,6 +128,7 @@ public class GameManager {
             if (Character.isUpperCase(p)) {
                 if (x2 == x1) {
                     if (y2 == y1 - 1) return true;
+
                     if (y1 == 6 && y2 == y1 - 2) {
 
 
@@ -142,6 +139,7 @@ public class GameManager {
             } else {
                 if (x2 == x1) {
                     if (y2 == y1 + 1) return true;
+
                     if (y1 == 1 && y2 == y1 + 2) {
 
                         return true;
@@ -163,8 +161,8 @@ public class GameManager {
 
     private boolean enPassantValid(int x1, int y1, int x2, int y2, char p) {
         return false;
-
     }
+
 
 
     private boolean knightValid(int x1, int y1, int x2, int y2, char p, char t) {

@@ -15,6 +15,10 @@ public class GameTree {
     public GameTree() {
         root = new Node(100, null, null);
     }
+    public GameTree(ChessBoard start){
+        root = new Node(start, null, null);
+        root.Turn = Turn.White;
+    }
 
     public GameTree(ChessBoard start) {
         root = new Node(start, null, null);

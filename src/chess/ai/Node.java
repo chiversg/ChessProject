@@ -8,9 +8,6 @@ import java.util.LinkedList;
 
 public class Node {
     public ChessBoard data;
-
-    LinkedList<Move> moveSequence;
-
     public Point fromPos;
     public Point toPos;
     int item;
