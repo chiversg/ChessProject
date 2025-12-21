@@ -4,12 +4,12 @@ import chess.backend.ChessBoard;
 import chess.utilities.ChessUtil.*;
 
 import java.awt.*;
+import java.util.LinkedList;
 
 public class Node {
     public ChessBoard data;
-
-    Point fromPos;
-    Point toPos;
+    public Point fromPos;
+    public Point toPos;
     int item;
     public Node firstChild;
     public Node nextSibling;
@@ -31,5 +31,9 @@ public class Node {
         this.toPos = pos;
         firstChild = child;
         nextSibling = Sibling;
+    }
+
+    public void PrintMove(){
+        System.out.println("(" + fromPos.x + ", " + fromPos.y + ") -> (" + toPos.x + ", " + toPos.y + ")");
     }
 }

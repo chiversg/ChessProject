@@ -1,7 +1,6 @@
-import chess.ai.GameTree;
 import chess.frontend.*;
 import chess.backend.*;
-import chess.utilities.BoardEvaluations;
+import chess.utilities.Evaluations;
 
 public class Test {
     public static void main(String[] args) {
@@ -12,6 +11,6 @@ public class Test {
         //gt.IncreaseTreeDepth();
         //gt.PrintTree(gt.GetRoot());
         new Client();
-        System.out.println(BoardEvaluations.EvaluateBoard(new ChessBoard().getCharArr()));
+        System.out.println(Evaluations.EvaluateBoard(new ChessBoard().getCharArr()));
     }
 }
