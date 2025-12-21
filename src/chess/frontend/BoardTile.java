@@ -12,8 +12,6 @@ public class BoardTile extends JLabel implements MouseListener {
         this.addMouseListener(this);
     }
 
-    public int[] GetPosition(){ return position; }
-
     //region MouseListener Methods
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {

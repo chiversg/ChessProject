@@ -76,7 +76,7 @@ public class Client {
     }
 
     public void TileClicked(int x, int y) {
-        if (fromPos.x <= 0 && !boardManager.IsEmptyTile(x, y)) {
+        if (fromPos.x < 0 && !boardManager.IsEmptyTile(x, y)) {
             System.out.println("start point selected");
             LinkedList<Point> validTiles = gameManager.allValidMoves(x, y);
             for (Point p : validTiles) {
