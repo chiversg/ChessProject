@@ -50,12 +50,13 @@ public class Options implements ActionListener {
         container.add(whiteToggle);
         container.add(blackToggle);
         container.add(noneToggle);
+        container.add(Box.createRigidArea(new Dimension(30, 20)));
         container.add(alphaToggle);
-        container.add(Box.createRigidArea(new Dimension(50, 20)));
+        container.add(Box.createRigidArea(new Dimension(30, 20)));
         container.add(sdLabel);
         container.add(Box.createRigidArea(new Dimension(10, 20)));
         container.add(searchDepthField);
-        container.add(Box.createRigidArea(new Dimension(50, 20)));
+        container.add(Box.createRigidArea(new Dimension(30, 20)));
         container.add(confirmButton);
 
         return container;

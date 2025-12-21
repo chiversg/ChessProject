@@ -6,7 +6,7 @@ import javax.swing.*;
 import java.awt.*;
 
 
-public class Log {
+public class LogManager {
     private JTextArea moveLog;
     private JTextArea minimaxData;
     private JLabel turnLabel;
@@ -59,7 +59,7 @@ public class Log {
         lineNumber++;
     }
 
-    public void UpdateMinimaxLog(int depth, float best, float time) {
+    public void UpdateMinimaxLog(int depth, float best, double time) {
         minimaxData.setText(
                 "Search Depth: " + depth + '\n' +
                         "Best Move: " + best + '\n' +

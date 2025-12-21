@@ -7,7 +7,6 @@ import chess.frontend.Client;
 import chess.utilities.ChessUtil.Turn;
 import chess.utilities.GameSettings;
 
-import java.awt.print.PrinterIOException;
 import java.util.ArrayList;
 import java.awt.Point;
 import java.util.LinkedList;
@@ -19,7 +18,7 @@ public class GameManager {
     public ArrayList<Character> captured = new ArrayList<>();
     public Client client;
     public boolean gameOver = false;
-    public String loserString = "";
+    public String winnerString = "";
 
     private GameTree gameTree;
 
@@ -71,11 +70,11 @@ public class GameManager {
 
         if (possibleWhiteMoves.isEmpty()) {
             gameOver = true;
-            loserString = "White";
+            winnerString = "Black";
         }
         if (possibleBlackMoves.isEmpty()) {
             gameOver = true;
-            loserString = "Black";
+            winnerString = "White";
         }
 
         if (turnType == Turn.Black && GameSettings.isBlackCPU) {
@@ -88,7 +87,7 @@ public class GameManager {
 
     private void computeNextMove() {
         boolean isMax = turnType == Turn.White;
-        float time;
+        double time;
         Result bestMove;
 
         Node root = new Node(board.copy(), null, null);
@@ -100,13 +99,16 @@ public class GameManager {
         } else {
             bestMove = gameTree.Minimax(root, GameSettings.searchDepth, isMax);
         }
-        bestMove.SetTime(System.currentTimeMillis() - time);
+        time = System.currentTimeMillis() - time;
+        bestMove.SetTime(time);
 
         Node bestNode = bestMove.state;
 
         latestResult = bestMove;
 
-        makeMove(bestNode.fromPos.x, bestNode.fromPos.y, bestNode.toPos.x, bestNode.toPos.y);
+        if(bestNode != null) {
+            makeMove(bestNode.fromPos.x, bestNode.fromPos.y, bestNode.toPos.x, bestNode.toPos.y);
+        }
     }
 
     public char[][] getCharArr() {

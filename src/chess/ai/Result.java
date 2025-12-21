@@ -3,7 +3,7 @@ package chess.ai;
 public class Result {
     public Node state;
     public float evaluation;
-    private float time = 0.0f;
+    private double time = 0.0;
 
     public Result(){
         state = null;
@@ -14,11 +14,11 @@ public class Result {
         evaluation = score;
     }
 
-    public void SetTime(float millis){
+    public void SetTime(double millis){
         time = millis/1000;
     }
 
-    public float GetTime(){
+    public double GetTime(){
         return time;
     }
 }

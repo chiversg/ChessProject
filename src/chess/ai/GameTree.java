@@ -35,13 +35,17 @@ public class GameTree {
     }
 
     public Result MinimaxAB(Node node, int depth, float alpha, float beta, boolean maximizingPlayer) {
-        //Base Case. We have reached max search depth, or we have reached a terminal state
+        Result value;
+        LinkedList<Node> children = generateAllChildren(node);
+
+        //Terminal state, no more legal moves can be made
+        if(children.isEmpty()){
+            return new Result(node, Evaluations.EvaluateBoard(node.data.getCharArr()));
+        }
+        //Base Case. We have reached max search depth
         if (depth == 0) {
             return new Result(node, Evaluations.EvaluateBoard(node.data.getCharArr()));
         }
-
-        Result value;
-        LinkedList<Node> children = generateAllChildren(node);
 
         if (maximizingPlayer) {
             value = new Result(null, -Float.MAX_VALUE);

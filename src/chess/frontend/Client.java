@@ -13,7 +13,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.sql.SQLOutput;
 import java.util.LinkedList;
 
 
@@ -26,7 +25,7 @@ public class Client {
     private Point fromPos = new Point(-1, -1);    //Coordinates of the selected piece
     private Point toPos = new Point(-1, -1); //Coordinates of the destination
     private Turn currentTurn;
-    private Log log;
+    private LogManager log;
     private Options options;
     private BoardManager boardManager;
     private GameManager gameManager;
@@ -37,7 +36,7 @@ public class Client {
         gameManager = new GameManager();
 
         Reference = this;
-        log = new Log();
+        log = new LogManager();
         boardManager = new BoardManager(100, 100, this);
         options = new Options();
 
@@ -56,8 +55,6 @@ public class Client {
         buildBoard(frame);
         boardStateChanged();
         frame.setVisible(true);
-
-        log.UpdateMinimaxLog(10, 2, 43.56646f);
     }
 
     private void buildBoard(JFrame frame) {
