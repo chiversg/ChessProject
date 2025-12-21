@@ -1,7 +1,7 @@
 package chess.frontend;
 
 import chess.backend.InvalidMoveException;
-import chess.utilities.ChessUtil.TurnType;
+import chess.utilities.ChessUtil.Turn;
 import chess.utilities.ChessUtil;
 import chess.backend.GameManager;
 
@@ -22,7 +22,7 @@ public class Client {
     BufferedImage background, validBorder, selectedBorder;          //Misc. images
     private Point fromPos = new Point(-1, -1);    //Coordinates of the selected piece
     private Point toPos = new Point(-1, -1); //Coordinates of the destination
-    private TurnType currentTurn;
+    private Turn currentTurn;
     private Log log;
     private BoardManager boardManager;
     private GameManager gameManager;

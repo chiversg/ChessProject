@@ -3,7 +3,7 @@ package chess.utilities;
     public class ChessUtil {
         public static String iconPath = "src/chess/frontend/icons/";
 
-        public enum TurnType {
+        public enum Turn {
             White, Black, CPU
         }
 
@@ -40,7 +40,7 @@ package chess.utilities;
             return Character.isUpperCase(piece);
         }
 
-        public static boolean IsValidStart(char piece, TurnType turn){
+        public static boolean IsValidStart(char piece, Turn turn){
             return switch(turn){
                 case White -> IsWhitePiece(piece);
                 case Black ->  !IsWhitePiece(piece);
