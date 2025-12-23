@@ -14,6 +14,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.Objects;
+
+import static chess.utilities.ChessUtil.iconPath;
 
 
 public class Client {
@@ -153,26 +156,26 @@ public class Client {
 
     private void loadImages() {
         try {
-            bKing = ImageIO.read(new File(ChessUtil.iconPath + "black_king.png"));
-            bQueen = ImageIO.read(new File(ChessUtil.iconPath + "black_queen.png"));
-            bRook = ImageIO.read(new File(ChessUtil.iconPath + "black_rook.png"));
-            bBishop = ImageIO.read(new File(ChessUtil.iconPath + "black_bishop.png"));
-            bKnight = ImageIO.read(new File(ChessUtil.iconPath + "black_knight.png"));
-            bPawn = ImageIO.read(new File(ChessUtil.iconPath + "black_pawn.png"));
+            bKing = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/black_king.png")));
+            bQueen = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/black_queen.png")));
+            bRook = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/black_rook.png")));
+            bBishop = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/black_bishop.png")));
+            bKnight = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/black_knight.png")));
+            bPawn = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/black_pawn.png")));
 
-            wKing = ImageIO.read(new File(ChessUtil.iconPath + "white_king.png"));
-            wQueen = ImageIO.read(new File(ChessUtil.iconPath + "white_queen.png"));
-            wRook = ImageIO.read(new File(ChessUtil.iconPath + "white_rook.png"));
-            wBishop = ImageIO.read(new File(ChessUtil.iconPath + "white_bishop.png"));
-            wKnight = ImageIO.read(new File(ChessUtil.iconPath + "white_knight.png"));
-            wPawn = ImageIO.read(new File(ChessUtil.iconPath + "white_pawn.png"));
+            wKing = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/white_king.png")));
+            wQueen = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/white_queen.png")));
+            wRook = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/white_rook.png")));
+            wBishop = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/white_bishop.png")));
+            wKnight = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/white_knight.png")));
+            wPawn = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/white_pawn.png")));
 
-            background = ImageIO.read(new File(ChessUtil.iconPath + "board.png"));
-            selectedBorder = ImageIO.read(new File(ChessUtil.iconPath + "selected_border.png"));
-            validBorder = ImageIO.read(new File(ChessUtil.iconPath + "valid_move_border.png"));
+            background = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/board.png")));
+            selectedBorder = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/selected_border.png")));
+            validBorder = ImageIO.read(Objects.requireNonNull(getClass().getResource("/chess/frontend/icons/valid_move_border.png")));
+
         } catch (IOException e) {
             System.out.println("There was an error loading images");
         }
-
     }
 }
